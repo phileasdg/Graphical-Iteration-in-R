@@ -16,7 +16,10 @@ N = 100
 
 # set the iteration plot x axis range (lower and upper bounds):
 x_min <- 0; x_max <- 8
-use_custom_range <- TRUE
+y_min <- -2; y_max <- 8
+
+use_custom_range_x <- TRUE
+use_custom_range_y <- TRUE
 
 # declare your function here:
 func <- function(x){
@@ -27,9 +30,17 @@ func <- function(x){
 ## The nitty-gritty
 
 ``` r
+if(use_custom_range_x == FALSE){
+  x_min <- min(cobweb_traject$xstarts); x_max <- max(cobweb_traject$xends)
+}
+if(use_custom_range_y == FALSE){
+  y_min <- min(cobweb_traject$xstarts); y_max <- max(cobweb_traject$xends)
+}
+
 get_function_data <- function(range = c(-1, 1), steps = 100){
   
   steps_multiplier <- (range[2]-range[1])/10 
+  if(steps_multiplier < 1){steps_multiplier <- 1}
   # adds steps to get data for depending on the number of 10s 
   # in the specified plot x range
   
@@ -49,7 +60,7 @@ graphical_iterator <- function(x_0, N = 100){
   vert <- FALSE 
   
   xstarts <- c(start)
-  ystarts <- c(0)
+  ystarts <- c(y_min)
   xends <- c(start)
   yends <- c(func(start)) 
   
@@ -78,9 +89,6 @@ graphical_iterator <- function(x_0, N = 100){
 }
 
 cobweb_traject <- graphical_iterator(x_0 = x_0, N = N)
-if(use_custom_range == FALSE){
-  x_min <- min(cobweb_traject$xstarts); x_max <- max(cobweb_traject$xends)
-}
 plot_data <- get_function_data(range = c(x_min,x_max))
 
 get_function_iteration_trajectory <- function(x_0, N = 100){
@@ -110,14 +118,15 @@ plot_data %>%
   geom_abline() + 
   geom_segment(data = cobweb_traject, aes(x = xstarts, y = ystarts, xend = xends, 
                                           yend = yends)) +
-  coord_cartesian(xlim = c(x_min, x_max))
+  coord_cartesian(xlim = c(x_min, x_max), ylim = c(y_min, y_max)) 
 ```
 
 ![](Graphical-iterator_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 TODO IN THE FUTURE:
 
-Colour segments based on distance to fixed points.
+-   Colour segments based on distance to fixed points.
+-   Colour segments based on distance to other segments.
 
 **Iteration trajectory time series plot**
 
