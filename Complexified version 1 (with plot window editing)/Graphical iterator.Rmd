@@ -33,15 +33,15 @@ issues!
 
 ```{r}
 # set your initial condition and desired number of iterations:
-x_0 = 3.43
-N = 100
+x_0 <- 3.43
+N <- 100
 
 # set the iteration plot x axis range (lower and upper bounds):
 x_min <- 0; x_max <- 8
 y_min <- -2; y_max <- 8
 
-use_custom_range_x <- TRUE
-use_custom_range_y <- TRUE
+use_custom_range_x <- FALSE
+use_custom_range_y <- FALSE
 
 # declare your function here:
 func <- function(x){
@@ -52,13 +52,6 @@ func <- function(x){
 ## The nitty-gritty
 
 ```{r}
-if(use_custom_range_x == FALSE){
-  x_min <- min(cobweb_traject$xstarts); x_max <- max(cobweb_traject$xends)
-}
-if(use_custom_range_y == FALSE){
-  y_min <- min(cobweb_traject$xstarts); y_max <- max(cobweb_traject$xends)
-}
-
 get_function_data <- function(range = c(-1, 1), steps = 100){
   
   steps_multiplier <- (range[2]-range[1])/10 
@@ -111,14 +104,23 @@ graphical_iterator <- function(x_0, N = 100){
 }
 
 cobweb_traject <- graphical_iterator(x_0 = x_0, N = N)
+
+if(use_custom_range_x == FALSE){
+  x_min <- min(cobweb_traject$xstarts); x_max <- max(cobweb_traject$xends)
+}
+if(use_custom_range_y == FALSE){
+  y_min <- min(cobweb_traject$xstarts); y_max <- max(cobweb_traject$xends)
+}
+
 plot_data <- get_function_data(range = c(x_min,x_max))
+
 
 get_function_iteration_trajectory <- function(x_0, N = 100){
   
   x_t <- x_0
   trajectory <- c(x_t)
   
-  for(t in 0:N-1){
+  for(t in 0:(N-1)){
     x_t <- func(x_t)
     trajectory <- c(trajectory, x_t) # add x_t_1's value to the trajectory vector
   }
@@ -126,7 +128,7 @@ get_function_iteration_trajectory <- function(x_0, N = 100){
 }
 
 trajectory <- get_function_iteration_trajectory(x_0 = x_0, N = N)
-trajectory <- data.frame(x = 1:length(trajectory), y = trajectory)
+trajectory <- data.frame(x = 0:(length(trajectory)-1), y = trajectory)
 ```
 
 ## Plots
@@ -151,6 +153,7 @@ TODO IN THE FUTURE:
 **Iteration trajectory time series plot**
 
 ```{r}
+trajectory
 trajectory %>% 
   ggplot(aes(x, y)) +
   geom_line()
